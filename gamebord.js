@@ -1,101 +1,6 @@
-let newGame = document.querySelector(".new");
-let player1 = document.querySelector("#player1");
-let player2 = document.querySelector("#player2");
-let restart = document.querySelector(".restart");
-let container = document.querySelector(".container");
 let credits = document.querySelector(".credits");
 
-var proto = {
-    returnMarker() {
-        return this.marker;
-    },
-    
-}
-
-var playerFactory = (marker) => Object.assign(Object.create(proto), {
-    marker
-});
-
-
-
-
-const displayController = (function(){
-    let selection1 = document.querySelector(".selection1");
-    let selection2 = document.querySelector(".selection2");
-      
-    
-    let playersX = {
-        playerOne: playerFactory("X"),
-        playerTwo: playerFactory("O")
-    }
-
-    let playersO = {
-         playerOne : playerFactory("O"),
-         playerTwo : playerFactory("X")
-    }
-
-    var players = null;
-
-    
-
-   
-    
-
-
-    player1.addEventListener("click", (e) => {
-        if(!e.target.parentNode.classList.contains("dark")){
-            return;
-        } 
-
-        displayController.players = playersX;
-
-        e.target.parentNode.classList.remove("dark");
-        selection2.classList.remove("dark");
-
-        newGame.removeEventListener("click", selectPlayer)
-        newGame.style.display = "none";
-    })
-
-    player2.addEventListener("click", (e) => {
-        if(!e.target.parentNode.classList.contains("dark")){
-            return;
-        }
-        displayController.players = playersO;
-       
-        e.target.parentNode.classList.remove("dark");
-        selection1.classList.remove("dark");
-        
-        newGame.removeEventListener("click", selectPlayer)
-        newGame.style.display = "none";
-    })
-
-
-    let selectPlayer = function(e){
-        e.target.classList.remove("selectNew")
-        selection1.classList.add("dark");
-        selection2.classList.add("dark");
-    }
-  
-
-    
-  
-    
-
-
-    return {
-        selectPlayer,
-        players,
-        selection1,
-        selection2,
-    }
-
-   
-})();
-
-
-
-
-const Gameboard = (function(ourPlayers){
+const Gameboard = function(ourPlayers){
     
     var boxes = document.querySelectorAll(".box");
     var gamebord = ["","","","","","","","",""];
@@ -172,12 +77,5 @@ const Gameboard = (function(ourPlayers){
         boxes,
         currentPlayer
     }
-})(displayController.players);
-
-
-
-newGame.addEventListener("click", 
-    displayController.selectPlayer 
-);
-
+}(displayController.players);
 

@@ -1,0 +1,95 @@
+*{
+    box-sizing: border-box;
+}
+
+.title{
+    text-align: center;
+    font-size: 50px;
+}
+.header{
+    display: flex;
+    justify-content: space-evenly;
+    font-size: larger;
+}
+
+.dark{
+    cursor: pointer;
+    animation: blinking 3s infinite;
+color:  rgb(145, 70, 16);
+}
+.dark:hover{
+    text-decoration: underline;
+    cursor: pointer;
+    
+}
+@keyframes blinking{
+    0%{
+        transform: scale(.7);
+    }
+    50%{
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(.7);
+    }
+}
+
+
+
+.container{
+    margin: 10px auto;
+    border: 1px solid rgb(77, 75, 75);
+    width: max-content;
+    height: max-content;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background-color: black;
+}
+
+.box{
+    border: 1px solid rgb(255, 255, 255);
+    width: 50px;
+    height: 50px;
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    line-height: 50px;
+    margin: 10px;
+    cursor: pointer;
+}
+.new{
+    text-align: center;
+    font-size: 30px;
+    scale: .7;
+}
+.selectNew{
+    text-align: center;
+    font-size: 30px;
+    animation: scaling 5s infinite;
+    cursor: pointer;
+    color:  rgb(145, 70, 16);
+}
+
+@keyframes scaling{
+    0%{
+        transform: scale(.7);
+    }
+    50%{
+        transform: scale(1);
+    }
+    100%{
+        transform: scale(.7);
+    }
+}
+.restart{
+    text-align: center;
+    font-size: 20px;
+    margin-top: 50px;
+    color: rgb(145, 70, 16);
+    cursor: pointer;
+}
+
+.credits{
+    font-size: 30px;
+    text-align: center;
+}
