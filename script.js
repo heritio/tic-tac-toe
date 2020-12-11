@@ -4,6 +4,9 @@ let player2 = document.querySelector("#player2");
 let restart = document.querySelector(".restart");
 let container = document.querySelector(".container");
 let credits = document.querySelector(".credits");
+let selection1 = document.querySelector(".selection1");
+let selection2 = document.querySelector(".selection2");
+var boxes = document.querySelectorAll(".box");
 
 var proto = {
     returnMarker() {
@@ -20,54 +23,20 @@ var playerFactory = (marker) => Object.assign(Object.create(proto), {
 
 
 const displayController = (function(){
-    let selection1 = document.querySelector(".selection1");
-    let selection2 = document.querySelector(".selection2");
-      
-    
-    let playersX = {
-        playerOne: playerFactory("X"),
-        playerTwo: playerFactory("O")
+
+    var players = {};
+
+    let firstPlayer = function(){
+        players.playerOne =  playerFactory("X");
+        players.playerTwo = playerFactory("O");
+        return players;
+    }
+    let secondPlayer = function(){
+        players.playerOne = playerFactory("O");
+        players.playerTwo = playerFactory("X");
+        return players;
     }
 
-    let playersO = {
-         playerOne : playerFactory("O"),
-         playerTwo : playerFactory("X")
-    }
-
-    var players = null;
-
-    
-
-   
-    
-
-
-    player1.addEventListener("click", (e) => {
-        if(!e.target.parentNode.classList.contains("dark")){
-            return;
-        } 
-
-        displayController.players = playersX;
-
-        e.target.parentNode.classList.remove("dark");
-        selection2.classList.remove("dark");
-
-        newGame.removeEventListener("click", selectPlayer)
-        newGame.style.display = "none";
-    })
-
-    player2.addEventListener("click", (e) => {
-        if(!e.target.parentNode.classList.contains("dark")){
-            return;
-        }
-        displayController.players = playersO;
-       
-        e.target.parentNode.classList.remove("dark");
-        selection1.classList.remove("dark");
-        
-        newGame.removeEventListener("click", selectPlayer)
-        newGame.style.display = "none";
-    })
 
 
     let selectPlayer = function(e){
@@ -76,17 +45,10 @@ const displayController = (function(){
         selection2.classList.add("dark");
     }
   
-
-    
-  
-    
-
-
     return {
         selectPlayer,
-        players,
-        selection1,
-        selection2,
+        firstPlayer,
+        secondPlayer
     }
 
    
@@ -95,15 +57,39 @@ const displayController = (function(){
 
 
 
-const Gameboard = (function(ourPlayers){
-    
-    var boxes = document.querySelectorAll(".box");
+const Gameboard = (function(){
     var gamebord = ["","","","","","","","",""];
+    let ourPlayers;
+    var currentPlayer = {current: null};
+    
+    
+    player1.addEventListener("click", (e) => {
+        if(!e.target.parentNode.classList.contains("dark")){
+            return;
+        }
 
-    var currentPlayer = null;
-    if(displayController.players != null){
-        currentPlayer = ourPlayers.playerOne;
-    }
+        Gameboard.ourPlayers = displayController.firstPlayer();
+
+        e.target.parentNode.classList.remove("dark");
+        selection2.classList.remove("dark");
+
+        newGame.removeEventListener("click", displayController.selectPlayer)
+        newGame.style.display = "none";
+    })
+
+    player2.addEventListener("click" , (e) => {
+        if(!e.target.parentNode.classList.contains("dark")){
+            return;
+        }
+
+        Gameboard.ourPlayers = displayController.secondPlayer();
+
+        e.target.parentNode.classList.remove("dark");
+        selection1.classList.remove("dark");
+
+        newGame.removeEventListener("click", displayController.selectPlayer)
+        newGame.style.display = "none";
+    })
     
     
 
@@ -119,7 +105,9 @@ const Gameboard = (function(ourPlayers){
             
             for(let g = 0; g < 3; g += 1){
                 if(gamebord[winningCondition[l][g]] == gamebord[winningCondition[l][g - 1]] && gamebord[winningCondition[l][g - 1]] == gamebord[winningCondition[l][g + 1]] && gamebord[winningCondition[l][g]] != "" && gamebord[winningCondition[l][g - 1]] != "" && gamebord[winningCondition[l][g +1]] != ""){
-                    credits.textContent = `The winner is ${Gameboard.currentPlayer}`;
+                    credits.textContent = `The winner is ${Gameboard.currentPlayer.current.marker}`;
+                }else if(!gamebord.includes("")){
+                    credits.textContent = `Its a Draw`;
                 }
             }
         }
@@ -131,25 +119,22 @@ const Gameboard = (function(ourPlayers){
 
             
             
-        if(displayController.selection1.classList.contains("dark") || displayController.selection2.classList.contains("dark") || newGame.classList.contains("selectNew")){
+        if(selection1.classList.contains("dark") || selection2.classList.contains("dark") || newGame.classList.contains("selectNew") || credits.textContent != ""){
             return;
         }
         let index = e.target.getAttribute("data-index");
 
-        if((currentPlayer == ourPlayers.playerOne || currentPlayer == null) && gamebord[index] == ""){
-             gamebord[index] += ourPlayers.playerOne.returnMarker();
+        if((Gameboard.currentPlayer.current == Gameboard.ourPlayers.playerOne || Gameboard.currentPlayer.current == null) && gamebord[index] == ""  ){
+             gamebord[index] = Gameboard.ourPlayers.playerOne.returnMarker();
              renderBoard();
              checkForFinish();
-             currentPlayer = ourPlayers.playerTwo;      
-        }else if(currentPlayer == ourPlayers.playerTwo && gamebord[index] == ""){
-             gamebord[index] += ourPlayers.playerTwo.returnMarker();
+             Gameboard.currentPlayer.current = Gameboard.ourPlayers.playerTwo;      
+        }else if(Gameboard.currentPlayer.current == Gameboard.ourPlayers.playerTwo && gamebord[index] == ""){
+             gamebord[index] = Gameboard.ourPlayers.playerTwo.returnMarker();
             renderBoard();
             checkForFinish();
-             currentPlayer = ourPlayers.playerOne;
-        }
-
-       
-            
+            Gameboard.currentPlayer.current = Gameboard.ourPlayers.playerOne;
+        }   
  
          },false)
     }
@@ -161,18 +146,17 @@ const Gameboard = (function(ourPlayers){
             box.textContent = "";
         })
         gamebord = ["","","","","","","","",""];
-        currentPlayer = ourPlayers.first;
+        currentPlayer = Gameboard.ourPlayers.playerOne;
+        credits.textContent = "";
     })
-
- 
 
     
 
     return{
-        boxes,
+        ourPlayers,
         currentPlayer
     }
-})(displayController.players);
+})();
 
 
 
